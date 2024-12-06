@@ -14,16 +14,20 @@ def send_verify_button(channel_id, message_text):
     
     return bot.send_message(channel_id, message_text, reply_markup=markup)
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['POST', 'GET', 'HEAD'])
 def webhook():
     """Handle webhook requests from Telegram"""
-    if request.headers.get('content-type') == 'application/json':
-        json_string = request.get_data().decode('utf-8')
-        update = types.Update.de_json(json_string)
-        bot.process_new_updates([update])
-        return Response('ok', status=200)
+    if request.method == 'POST':
+        if request.headers.get('content-type') == 'application/json':
+            json_string = request.get_data().decode('utf-8')
+            update = types.Update.de_json(json_string)
+            bot.process_new_updates([update])
+            return Response('ok', status=200)
+        else:
+            return Response('error', status=403)
     else:
-        return Response('error', status=403)
+        # Handle HEAD and GET requests
+        return Response('Bot webhook is active', status=200)
 
 @bot.message_handler(func=lambda message: True)
 def handle_messages(message):
@@ -46,10 +50,10 @@ def main():
     # Start Flask app
     # In production (Render), the SSL is handled by the platform
     if os.environ.get('RENDER'):
-        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8443)))
+        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 10000)))
     else:
-        # Local development with SSL
-        app.run(host='0.0.0.0', port=8443, ssl_context=('cert.pem', 'key.pem'))
+        # Local development without SSL for testing
+        app.run(host='0.0.0.0', port=10000)
 
 if __name__ == '__main__':
     main()
