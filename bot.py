@@ -28,13 +28,14 @@ def webhook():
 @bot.message_handler(func=lambda message: True)
 def handle_messages(message):
     """Forward messages to channel with verify button"""
-    # Check if sender is admin
-    chat_member = bot.get_chat_member(message.chat.id, message.from_user.id)
-    is_admin = chat_member.status in ['creator', 'administrator']
-    
-    if is_admin:
+    try:
         # Forward the message to channel with verify button
         send_verify_button(CHANNEL_ID, message.text)
+        # Send confirmation to the sender
+        bot.reply_to(message, "Message forwarded to channel successfully!")
+    except Exception as e:
+        print(f"Error forwarding message: {e}")
+        bot.reply_to(message, "Sorry, couldn't forward your message. Please try again.")
 
 def main():
     """Main function to start the bot"""
