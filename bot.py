@@ -9,7 +9,7 @@ bot = TeleBot(BOT_TOKEN)
 def send_verify_button(channel_id, message_text):
     """Create and send message with verify button"""
     markup = types.InlineKeyboardMarkup()
-    verify_button = types.InlineKeyboardButton(text="✅ Verify Now", url=VERIFY_URL)
+    verify_button = types.InlineKeyboardButton(text="➡️ Join Waitlist", url=VERIFY_URL)
     markup.add(verify_button)
     
     return bot.send_message(channel_id, message_text, reply_markup=markup)
